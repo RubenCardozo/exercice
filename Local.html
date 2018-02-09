@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="mystyle.css" rel="stylesheet"/>
+        <title>Exercice</title>
+        <script>
+
+            var loginArray = [];
+            var selectIndex = -1;
+            
+            function init() {
+                document.getElementById("ligneTableau").innerHTML = "";
+                if (localStorage.loginSave) {
+                    loginArray = JSON.parse(localStorage.loginSave);
+                    for (var i = 0; i <loginArray.length; i++) {
+                        prepareTableau(i, loginArray[i].id, loginArray[i].nom, loginArray[i].age);
+                    };
+                };
+            };
+
+            function onAdd() {
+                var id = 1+ (loginArray.length);
+                var nom = document.getElementById("nom").value;
+                var age = document.getElementById("age").value;
+                var Obj = {id: id, nom: nom, age: age};
+                if (selectIndex === -1) {
+                    loginArray.push(Obj);
+                } else {
+                    loginArray.splice(selectIndex, 1, Obj);
+                }
+
+                localStorage.loginSave = JSON.stringify(loginArray);
+                init();
+                onReset();
+            };
+
+            function prepareTableau(index, id, nom, age) {
+                var tableau = document.getElementById("ligneTableau");
+                var ligne = tableau.insertRow();
+                var idCell = ligne.insertCell(0);
+                var nomCell = ligne.insertCell(1);
+                var ageCell = ligne.insertCell(2);
+                var actionCell = ligne.insertCell(3);
+
+                idCell.innerHTML = id;
+                nomCell.innerHTML = nom;
+                ageCell.innerHTML = age +" ans";
+                actionCell.innerHTML = '<button onclick="onEdit(' + index + ')">Edit</button><br/><button onclick="deleteLigne(' + index + ')">Del</button>';
+            };
+
+            function deleteLigne(index) {   
+                loginArray.splice(index, 1);
+                localStorage.loginSave = JSON.stringify(loginArray);
+                init();
+            };
+
+            function onReset() {
+                selectIndex = -1;
+                document.getElementById("id").value = "";
+                document.getElementById("nom").value = "";
+                document.getElementById("age").value = "";
+                document.getElementById("submit").innerHTML = "ADD";
+            };
+
+            function onEdit(index) {
+                selectIndex = index;
+                var Obj = loginArray[index];
+                index = Obj.id;
+                document.getElementById("nom").value = Obj.nom;
+                document.getElementById("age").value = Obj.age;
+                document.getElementById("submit").innerHTML = "MàJ";
+            };         
+            
+
+        </script>
+    </head>
+
+    <body onload="init()">
+        <div class="containeur">
+            <h1>LOGIN</h1>           
+            <div>
+                <fieldset>
+                    <label for="id">ID: </label>
+                    <input type="number" placeholder="numero d'ID" id="id" readonly>
+                </fieldset>
+
+                <fieldset>
+                     <label for="nom">NOM: </label>
+                     <input type="text" placeholder="Votre nom" id="nom">
+                </fieldset>
+
+                <fieldset>
+                    <label for="age">AGE: </label>
+                    <input type="number" placeholder="Votre age" id="age">
+                </fieldset>
+
+                <fieldset>
+                    <button id="submit" onclick="onAdd()">ADD</button>
+                    <button id="reset" onclick="onReset()">Reset</button>
+                </fieldset>
+            </div>
+            
+            <table id="monTableau">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Age</th>
+                        <th>Action</th>
+                    </tr>
+                 </thead>
+                <tbody id="ligneTableau">
+                </tbody>
+            </table> 
+
+        </div>
+    </body>
+</html>
+
